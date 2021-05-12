@@ -13,9 +13,9 @@
 // Not MT Safe
 static int duties[3];
  
-#define LED_R_GPIO   (21)
-#define LED_G_GPIO   (4)
-#define LED_B_GPIO   (18)
+#define LED_R_GPIO   (1)
+#define LED_G_GPIO   (3)
+#define LED_B_GPIO   (2)
 #define LED_R_CH     (LEDC_CHANNEL_0)
 #define LED_G_CH     (LEDC_CHANNEL_1)
 #define LED_B_CH     (LEDC_CHANNEL_2)
@@ -26,7 +26,7 @@ static int duties[3];
 #define LEDC_HS_TIMER_R   (LEDC_TIMER_0)
 #define LEDC_HS_TIMER_G   (LEDC_TIMER_1)
 #define LEDC_HS_TIMER_B   (LEDC_TIMER_2)
-#define LEDC_HS_MODE      (LEDC_HIGH_SPEED_MODE)
+#define LEDC_HS_MODE      (LEDC_LOW_SPEED_MODE)
 
 static void _set_by_duties();
 

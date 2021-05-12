@@ -15,11 +15,11 @@ static uint32_t cPresses;
 static uint32_t cInvokes;
 static uint32_t busy;
 
-#define GPIO_INPUT_IO_0      (22)
-#define GPIO_INPUT_IO_1      (19)
+#define GPIO_INPUT_IO_0      (5)
+// #define GPIO_INPUT_IO_1      (19)
 // #define GPIO_INPUT_PIN_SEL   ((1ULL<<GPIO_INPUT_IO_0) | (1ULL<<GPIO_INPUT_IO_1))
-// #define GPIO_INPUT_PIN_SEL   (1ULL<<GPIO_INPUT_IO_0)
-#define GPIO_INPUT_PIN_SEL   (1ULL<<GPIO_INPUT_IO_1)
+#define GPIO_INPUT_PIN_SEL   (1ULL<<GPIO_INPUT_IO_0)
+// #define GPIO_INPUT_PIN_SEL   (1ULL<<GPIO_INPUT_IO_1)
 #define ESP_INTR_FLAG_DEFAULT (0)
 
 static xQueueHandle gpio_evt_queue = NULL;
@@ -34,6 +34,16 @@ static void IRAM_ATTR gpio_isr_handler(void* arg)
         uint32_t gpio_num = (uint32_t) arg;
         xQueueSendFromISR(gpio_evt_queue, &gpio_num, NULL);
         lastIsr = now;
+    }
+    portEXIT_CRITICAL_ISR(&mux);
+}
+
+void fake_toggle() {
+    portENTER_CRITICAL_ISR(&mux);
+    cPresses++;
+    if (busy == pdFALSE) {
+        uint32_t gpio_num = (uint32_t) 1;
+        xQueueSendFromISR(gpio_evt_queue, &gpio_num, NULL);
     }
     portEXIT_CRITICAL_ISR(&mux);
 }
@@ -93,9 +103,9 @@ void button_init() {
     //install gpio isr service
     gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);
     //hook isr handler for specific gpio pin
-    // gpio_isr_handler_add(GPIO_INPUT_IO_0, gpio_isr_handler, (void*) GPIO_INPUT_IO_0);
+    gpio_isr_handler_add(GPIO_INPUT_IO_0, gpio_isr_handler, (void*) GPIO_INPUT_IO_0);
     // //hook isr handler for specific gpio pin
-    gpio_isr_handler_add(GPIO_INPUT_IO_1, gpio_isr_handler, (void*) GPIO_INPUT_IO_1);
+    // gpio_isr_handler_add(GPIO_INPUT_IO_1, gpio_isr_handler, (void*) GPIO_INPUT_IO_1);
 
     //remove isr handler for gpio number.
     gpio_isr_handler_remove(GPIO_INPUT_IO_0);

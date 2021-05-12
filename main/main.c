@@ -115,6 +115,20 @@ static const httpd_uri_t hello = {
     .user_ctx  = "Hello World!"
 };
 
+void fake_toggle();
+static esp_err_t toggle_get_handler(httpd_req_t *req)
+{
+    fake_toggle();
+    httpd_resp_sendstr(req, "Consider it done");
+    return ESP_OK;
+}
+
+static const httpd_uri_t toggle = {
+    .uri       = "/toggle",
+    .method    = HTTP_GET,
+    .handler   = toggle_get_handler,
+};
+
 /* An HTTP POST handler */
 static esp_err_t echo_post_handler(httpd_req_t *req)
 {
@@ -333,6 +347,8 @@ static httpd_handle_t start_webserver(void)
         httpd_register_uri_handler(server, &basic_color);
         httpd_register_uri_handler(server, &color);
         httpd_register_uri_handler(server, &breathe);
+        httpd_register_uri_handler(server, &toggle);
+
         return server;
     }
 
